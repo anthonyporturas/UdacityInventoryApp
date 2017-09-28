@@ -1,0 +1,96 @@
+<resources>
+
+    <!-- Name for the application [CHAR LIMIT=12] -->
+    <string name="app_name">ElectronicsInventory</string>
+
+    <!-- Label for overflow menu option that inserts fake electronic data into the app [CHAR LIMIT=20] -->
+    <string name="action_insert_dummy_data">Insert Dummy Data</string>
+
+    <!-- Label for overflow menu option that deletes all electronic data in the app [CHAR LIMIT=20] -->
+    <string name="action_delete_all_entries">Delete All Electronics</string>
+
+    <!-- Title text for the empty view, which describes the empty dog house image [CHAR LIMIT=50] -->
+    <string name="empty_view_title_text">It\'s a bit lonely here...</string>
+
+    <!-- Subtitle text for the empty view that prompts the user to add an electronic [CHAR LIMIT=50] -->
+    <string name="empty_view_subtitle_text">Get started by adding an electronic</string>
+
+    <!-- Title for the activity to add a new electronic [CHAR LIMIT=20] -->
+    <string name="editor_activity_title_new_electronic">Add a Electronic</string>
+
+    <!-- Title for the activity to edit an existing electronic [CHAR LIMIT=20] -->
+    <string name="editor_activity_title_edit_electronic">Edit Electronic</string>
+
+    <!-- Label for editor menu option to save electronic and leave editor [CHAR LIMIT=20] -->
+    <string name="action_save">Save</string>
+
+    <!-- Label for editor overflow menu option that deletes the current electronic [CHAR LIMIT=20] -->
+    <string name="action_delete">Delete</string>
+
+    <!-- Toast message in editor when new electronic has been successfully inserted [CHAR LIMIT=NONE] -->
+    <string name="editor_insert_electronic_successful">Electronic saved</string>
+
+    <!-- Toast message in editor when new electronic has failed to be inserted [CHAR LIMIT=NONE] -->
+    <string name="editor_insert_electronic_failed">Error with saving electronic</string>
+
+    <!-- Toast message in editor when current electronic was successfully updated [CHAR LIMIT=NONE] -->
+    <string name="editor_update_electronic_successful">Electronic updated</string>
+
+    <!-- Toast message in editor when current electronic has failed to be updated [CHAR LIMIT=NONE] -->
+    <string name="editor_update_electronic_failed">Error with updating electronic</string>
+
+    <!-- Dialog message when user is leaving editor but hasn't saved changes [CHAR LIMIT=NONE] -->
+    <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
+
+    <!-- Dialog button text for the option to discard a user's changes [CHAR LIMIT=20] -->
+    <string name="discard">Discard</string>
+
+    <!-- Dialog button text for the option to keep editing the current electronic [CHAR LIMIT=20] -->
+    <string name="keep_editing">Keep Editing</string>
+
+    <!-- Toast message in editor when current electronic was successfully deleted [CHAR LIMIT=NONE] -->
+    <string name="editor_delete_electronic_successful">Electronic deleted</string>
+
+    <!-- Toast message in editor when current electronic has failed to be deleted [CHAR LIMIT=NONE] -->
+    <string name="editor_delete_electronic_failed">Error with deleting electronic</string>
+
+    <!-- Dialog message to ask the user to confirm deleting the current electronic [CHAR LIMIT=NONE] -->
+    <string name="delete_dialog_msg">Delete this electronic?</string>
+
+    <!-- Dialog button text for the option to confirm deleting the current electronic [CHAR LIMIT=20] -->
+    <string name="delete">Delete</string>
+
+    <!-- Dialog button text for the option to cancel deletion of the current electronic [CHAR LIMIT=20] -->
+    <string name="cancel">Cancel</string>
+
+    <!-- Label for overview category of attributes in the editor [CHAR LIMIT=30] -->
+    <string name="category_overview">Overview</string>
+
+    <!-- Label for quantity information in the editor [CHAR LIMIT=30] -->
+    <string name="category_quantity">Quantity</string>
+
+    <!-- Label for price information in the editor [CHAR LIMIT=30] -->
+    <string name="category_price">Price</string>
+
+    <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_electronic_name">Name</string>
+
+    <!-- Text hint for quantity field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_electronic_quantity">Quantity</string>
+
+    <!-- Text hint for price field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_electronic_price">Price</string>
+
+    <!-- Text hint for supplier field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_electronic_supplier">Supplier</string>
+
+    <!-- Units for price of the electronic (USD) [CHAR LIMIT=5] -->
+    <string name="unit_electronic_price">$</string>
+
+    <!-- Label for the electronic's supplier if the supplier is unknown [CHAR LIMIT=20] -->
+    <string name="unknown_supplier">Unknown supplier</string>
+
+    <string name="item_sale">Sale!</string>
+
+    <string name="hint_email">Email</string>
+</resources>
