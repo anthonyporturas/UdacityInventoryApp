@@ -11,29 +11,27 @@ import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
-import android.support.v4.content.ContextCompat;
+
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
+
 import android.widget.Toast;
 
-import java.net.URI;
+import java.net.URL;
 
 /**
  * Created by Anthony on 9/12/2017.
@@ -41,33 +39,50 @@ import java.net.URI;
 public class EditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
-    private static final int PICK_IMAGE_REQUEST = 0;
-    /** Identifier for the electronic data loader */
+    /**
+     * Identifier for the electronic data loader
+     */
     private static final int EXISTING_ITEM_LOADER = 0;
 
-    /** Content URI for the existing electronic (null if it's a new electronic) */
+    /**
+     * Content URI for the existing electronic (null if it's a new electronic)
+     */
     private Uri mCurrentElectronicUri;
 
-    /** EditText field to enter the electronic's name */
+    /**
+     * EditText field to enter the electronic's name
+     */
     private EditText mNameEditText;
 
-    /** EditText field to enter the electronic's supplier */
+    /**
+     * EditText field to enter the electronic's supplier
+     */
     private EditText mSupplierEditText;
 
-    /** EditText field to enter the electronic's price */
+    /**
+     * EditText field to enter the electronic's price
+     */
     private EditText mPriceEditText;
 
-    /** EditText field to enter the electronic's quantity */
+    /**
+     * EditText field to enter the electronic's quantity
+     */
     private EditText mQuantityEditText;
 
     private EditText mEmailEditText;
 
-    private String mSupplier = ItemEntry.UNKNOWN_SUPPLIER;
 
     ImageView imageView;
 
-    /** Boolean flag that keeps track of whether the electronic has been edited (true) or not (false) */
+    Cursor mCursor;
+
+    private String imageURL;
+
+    boolean validImage = true;
+
+    /**
+     * Boolean flag that keeps track of whether the electronic has been edited (true) or not (false)
+     */
     private boolean mItemHasChanged = false;
 
     /**
@@ -91,7 +106,7 @@ public class EditorActivity extends AppCompatActivity implements
         // in order to figure out if we're creating a new electronic or editing an existing one.
         Intent intent = getIntent();
         mCurrentElectronicUri = intent.getData();
-        long detailItemId = intent.getLongExtra("id",0);
+        long detailItemId = intent.getLongExtra("id", 0);
         // If the intent DOES NOT contain a electronic content URI, then we know that we are
         // creating a new electronic.
         if (detailItemId == 0) {
@@ -125,27 +140,62 @@ public class EditorActivity extends AppCompatActivity implements
         mPriceEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mEmailEditText.setOnTouchListener(mTouchListener);
-        imageView.setOnClickListener(new View.OnClickListener(){
+
+        // User clicks on image to update it
+        // Type in url to upload
+        // http://image.jpg
+        // image.jpeg
+        // www.image.png
+        imageView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
-                tryToOpenImageSelector();
+            public void onClick(View view) {
+                final EditText txtUrl = new EditText(view.getContext());
+
+
+                txtUrl.setHint("https://d30y9cdsu7xlg0.cloudfront.net/png/45447-200.png");
+
+                new AlertDialog.Builder(view.getContext())
+                        .setTitle("Upload Image")
+                        .setMessage("Put in a valid url to an image.")
+                        .setView(txtUrl)
+                        .setPositiveButton("Upload", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                String url = txtUrl.getText().toString();
+                                if (!url.contains("http://") && !url.contains("https://")) {
+                                    url = "http://" + url;
+                                }
+                                validImage = uploadImage(url);
+                                if (!validImage){
+
+                                    uploadImage("https://d30y9cdsu7xlg0.cloudfront.net/png/45447-200.png");
+                                }
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                            }
+                        })
+                        .show();
                 mItemHasChanged = true;
             }
         });
+
         Button decrease = (Button) findViewById(R.id.decrease);
         Button increase = (Button) findViewById(R.id.increase);
 
-        decrease.setOnClickListener(new View.OnClickListener(){
+        // Button to decrease stock by one
+        decrease.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
+            public void onClick(View view) {
                 decreaseByOne();
                 mItemHasChanged = true;
             }
         });
 
-        increase.setOnClickListener(new View.OnClickListener(){
+        // Button to increase stock by one
+        increase.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
+            public void onClick(View view) {
                 increaseByOne();
                 mItemHasChanged = true;
             }
@@ -153,7 +203,7 @@ public class EditorActivity extends AppCompatActivity implements
 
         Button order = (Button) findViewById(R.id.order);
 
-        order.setOnClickListener(new View.OnClickListener(){
+        order.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendOrder();
@@ -161,7 +211,9 @@ public class EditorActivity extends AppCompatActivity implements
         });
 
     }
-    public void sendOrder(){
+
+    // Email for more shipments
+    public void sendOrder() {
 
 
         String[] emails = {mEmailEditText.getText().toString().trim()};
@@ -179,25 +231,27 @@ public class EditorActivity extends AppCompatActivity implements
         startActivity(Intent.createChooser(email, "Choose an Email client :"));
     }
 
-    public void decreaseByOne(){
+    // Decreases the stock by one
+    public void decreaseByOne() {
         String currentQuantity = mQuantityEditText.getText().toString();
 
-        if (currentQuantity.equals("0")){
+        if (currentQuantity.equals("0")) {
             return;
         }
-        mQuantityEditText.setText(String.valueOf(Integer.parseInt(currentQuantity)-1));
+        mQuantityEditText.setText(String.valueOf(Integer.parseInt(currentQuantity) - 1));
     }
 
-    public void increaseByOne(){
+    // Increases the stock by one
+    public void increaseByOne() {
         String currentQuantity = mQuantityEditText.getText().toString();
-       mQuantityEditText.setText(String.valueOf(Integer.parseInt(currentQuantity)+1));
+        mQuantityEditText.setText(String.valueOf(Integer.parseInt(currentQuantity) + 1));
     }
 
 
     /**
      * Get user input from editor and save electronic into database.
      */
-    private void saveElectronic() {
+    private boolean saveElectronic() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
@@ -205,42 +259,77 @@ public class EditorActivity extends AppCompatActivity implements
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String emailString = mEmailEditText.getText().toString().trim();
-        String imageString = mCurrentElectronicUri.toString().trim();
+
+
+        //String imageString = R.drawable.earphones + "";
         // Check if this is supposed to be a new electronic
         // and check if all the fields in the editor are blank
         if (mCurrentElectronicUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(quantityString) &&
                 TextUtils.isEmpty(priceString) && TextUtils.isEmpty(supplierString) &&
-                TextUtils.isEmpty(emailString)){
+                TextUtils.isEmpty(emailString)) {
             // Since no fields were modified, we can return early without creating a new electronic.
             // No need to create ContentValues and no need to do any ContentProvider operations.
-            return;
+            return false;
         }
 
         // Create a ContentValues object where column names are the keys,
         // and electronic attributes from the editor are the values.
         ContentValues values = new ContentValues();
+        if (TextUtils.isEmpty(nameString)) {
+            Toast.makeText(this, getString(R.string.need_name),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
         values.put(ItemEntry.COLUMN_ELECTRONIC_NAME, nameString);
         int quantity = 0;
         if (!TextUtils.isEmpty(quantityString)) {
             quantity = Integer.parseInt(quantityString);
+        } else {
+            Toast.makeText(this, getString(R.string.need_quantity),
+                    Toast.LENGTH_SHORT).show();
+            return false;
         }
         values.put(ItemEntry.COLUMN_ELECTRONIC_QUANTITY, quantity);
-        if (TextUtils.isEmpty(supplierString)){
-            supplierString = mSupplier;
+        if (TextUtils.isEmpty(supplierString)) {
+
+            Toast.makeText(this, getString(R.string.need_supplier),
+                    Toast.LENGTH_SHORT).show();
+            return false;
         }
-        values.put(ItemEntry.COLUMN_ELECTRONIC_SUPPLIER, imageString);
+        values.put(ItemEntry.COLUMN_ELECTRONIC_SUPPLIER, supplierString);
         // If the price is not provided by the user, don't try to parse the string into an
         // integer value. Use 0 by default.
         int price = 0;
         if (!TextUtils.isEmpty(priceString)) {
             price = Integer.parseInt(priceString);
+        } else {
+            Toast.makeText(this, getString(R.string.need_price),
+                    Toast.LENGTH_SHORT).show();
+            return false;
         }
         values.put(ItemEntry.COLUMN_ELECTRONIC_PRICE, price);
 
-        values.put(ItemEntry.COLUMN_EMAIL,emailString);
+        if (TextUtils.isEmpty(emailString)) {
+            Toast.makeText(this, getString(R.string.need_email),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } else if(emailString.split("@+").length == 1){
+            Toast.makeText(this, getString(R.string.need_email),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        values.put(ItemEntry.COLUMN_EMAIL, emailString);
 
-        values.put(ItemEntry.COLUMN_IMAGE,imageString);
+
+        if (TextUtils.isEmpty(imageURL) || !validImage) {
+            Toast.makeText(this, imageURL + "=" + validImage,Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, getString(R.string.need_image),Toast.LENGTH_SHORT).show();
+            return false;
+
+        }
+
+        values.put(ItemEntry.COLUMN_IMAGE, imageURL);
 
         // Determine if this is a new or existing electronic by checking if mCurrentElectronicUri is null or not
         if (mCurrentElectronicUri == null) {
@@ -276,65 +365,52 @@ public class EditorActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
             }
         }
+        return true;
     }
 
-    public void tryToOpenImageSelector() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-            return;
+    // Downloads the image from the URL and sets the image view to it
+    public boolean uploadImage(final String userURL) {
+        imageURL = userURL;
+        final URL url;
+        try {
+            url = new URL(userURL);
+        } catch (Exception e){
+            Toast.makeText(this, getString(R.string.need_image),
+                    Toast.LENGTH_SHORT).show();
+            return false;
         }
-        openImageSelector();
-    }
+        final boolean[] result = new boolean[1];
+        Thread t1 = new Thread() {
+            @Override
+            public void run() {
+                try {
 
-    private void openImageSelector() {
-        Intent intent;
-        if (Build.VERSION.SDK_INT < 19) {
-            intent = new Intent(Intent.ACTION_GET_CONTENT);
-        } else {
-            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-        }
-        intent.setType("image/*");
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    openImageSelector();
-                    // permission was granted
+                    //URL url = new URL(userURL);
+                    final Bitmap myBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                    result[0] = true;
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            imageView.setImageBitmap(myBitmap);
+                        }
+                    });
+                } catch (Exception e) {
+                    result[0] = false;
+                    System.err.println(e);
+                    //System.out.println("Setting default");
+                    //uploadImage("https://d30y9cdsu7xlg0.cloudfront.net/png/45447-200.png");
                 }
             }
+        };
+        t1.start();
+        try {
+            t1.join();
+        } catch (Exception e){
+            System.err.println(e);
+            result[0] = false;
         }
+        return result[0];
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-        // The ACTION_OPEN_DOCUMENT intent was sent with the request code READ_REQUEST_CODE.
-        // If the request code seen here doesn't match, it's the response to some other intent,
-        // and the below code shouldn't run at all.
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
-            // The document selected by the user won't be returned in the intent.
-            // Instead, a URI to that document will be contained in the return intent
-            // provided to this method as a parameter.  Pull that uri using "resultData.getData()"
-
-            if (resultData != null) {
-                mCurrentElectronicUri = resultData.getData();
-                imageView.setImageURI(mCurrentElectronicUri);
-                imageView.invalidate();
-            }
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -366,7 +442,10 @@ public class EditorActivity extends AppCompatActivity implements
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // Save electronic to database
-                saveElectronic();
+
+                if(!saveElectronic()){
+                    break;
+                }
                 // Exit activity
                 finish();
                 return true;
@@ -461,6 +540,7 @@ public class EditorActivity extends AppCompatActivity implements
         // Proceed with moving to the first row of the cursor and reading data from it
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
+            mCursor = cursor;
             // Find the columns of electronic attributes that we're interested in
             int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ELECTRONIC_NAME);
             int supplierColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ELECTRONIC_SUPPLIER);
@@ -482,7 +562,10 @@ public class EditorActivity extends AppCompatActivity implements
             mQuantityEditText.setText(Integer.toString(quantity));
             mPriceEditText.setText(Integer.toString(price));
             mEmailEditText.setText(email);
-            imageView.setImageURI(Uri.parse(image));
+
+            imageURL = image;
+            uploadImage(imageURL);
+
 
         }
     }

@@ -93,4 +93,18 @@
     <string name="item_sale">Sale!</string>
 
     <string name="hint_email">Email</string>
+
+    <string name="default_image">Setting default image</string>
+
+    <string name="need_email">Please enter a valid email</string>
+
+    <string name="need_name">Please enter a valid name</string>
+
+    <string name="need_supplier">Please enter a valid supplier</string>
+
+    <string name="need_price">Please enter a valid price</string>
+
+    <string name="need_quantity">Please enter a valid quantity</string>
+
+    <string name="need_image">Please enter a valid image URL</string>
 </resources>

@@ -2,7 +2,7 @@ package com.example.anthony.electronicsinventory;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
+
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -10,18 +10,16 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
+
 import android.widget.ListView;
 import android.app.LoaderManager;
 import android.support.design.widget.FloatingActionButton;
-import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.example.anthony.electronicsinventory.data.ItemContract.ItemEntry;
 import com.example.anthony.electronicsinventory.data.ItemDbHelper;
@@ -85,7 +83,8 @@ public class CatalogActivity extends AppCompatActivity implements
         values.put(ItemEntry.COLUMN_ELECTRONIC_PRICE, 10);
         values.put(ItemEntry.COLUMN_ELECTRONIC_QUANTITY, 10);
         values.put(ItemEntry.COLUMN_EMAIL, "support@bose.com");
-        values.put(ItemEntry.COLUMN_IMAGE, "android.resource://com.example.anthony.electronicsinventory/drawable/earphones");
+        //values.put(ItemEntry.COLUMN_IMAGE, "android.resource://com.example.anthony.electronicsinventory/drawable/earphones");
+        values.put(ItemEntry.COLUMN_IMAGE, "https://images-na.ssl-images-amazon.com/images/G/01/electronics/detail-page2/Bose_AE2_audio_headphones.jpg");
 
         // Insert a new row for Toto into the provider using the ContentResolver.
         // Use the {@link ItemEntry#CONTENT_URI} to indicate that we want to insert

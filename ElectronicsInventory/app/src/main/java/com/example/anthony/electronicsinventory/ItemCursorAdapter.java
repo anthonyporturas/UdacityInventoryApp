@@ -3,19 +3,22 @@ package com.example.anthony.electronicsinventory;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.anthony.electronicsinventory.data.ItemContract.ItemEntry;
+
+import java.net.URL;
+
 /**
  * Created by Anthony on 9/12/2017.
  */
@@ -67,7 +70,7 @@ public class ItemCursorAdapter  extends CursorAdapter {
         TextView supplierTextView = (TextView) view.findViewById(R.id.supplier);
         TextView priceTextView = (TextView) view.findViewById(R.id.price);
         TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
-        ImageView image = (ImageView) view.findViewById(R.id.item_image);
+        final ImageView image = (ImageView) view.findViewById(R.id.item_image);
 
         // Find the columns of electronic attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ELECTRONIC_NAME);
@@ -81,13 +84,33 @@ public class ItemCursorAdapter  extends CursorAdapter {
         String electronicPrice =  "$" + cursor.getString(priceColumnIndex);
         final int quantity = cursor.getInt(quantityColumnIndex);
         String electronicQuantity = "Quantity: "+quantity;
-        image.setImageURI(Uri.parse(cursor.getString(imageColumnIndex)));
+        final String imageString = cursor.getString(imageColumnIndex);
+        //image.setImageURI(Uri.parse(cursor.getString(imageColumnIndex)));
 
         // If the electronic supplier is empty string or null, then use some default text
         // that says "Unknown supplier", so the TextView isn't blank.
         if (TextUtils.isEmpty(electronicSupplier)) {
             electronicSupplier = context.getString(R.string.unknown_supplier);
         }
+
+        // Show image
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    URL url;
+                    url = new URL(imageString);
+                    final Bitmap myBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
+                    parent.runOnUiThread(new Runnable() {
+                        public void run() {
+                            image.setImageBitmap(myBitmap);
+                        }});
+                } catch (Exception e){
+                    System.err.println(e);
+                }
+            }
+        }.start();
 
         // Update the TextViews with the attributes for the current electronic
         nameTextView.setText(electronicName);
@@ -112,6 +135,7 @@ public class ItemCursorAdapter  extends CursorAdapter {
             }
         });
     }
+
 
 
 

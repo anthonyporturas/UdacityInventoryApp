@@ -11,7 +11,7 @@ import com.example.anthony.electronicsinventory.data.ItemContract.ItemEntry;
  */
 public class ItemDbHelper extends SQLiteOpenHelper {
 
-    public static final String LOG_TAG = ItemDbHelper.class.getSimpleName();
+
 
     /** Name of the database file */
     private static final String DATABASE_NAME = "store.db";
@@ -81,6 +81,7 @@ public class ItemDbHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    // Decrease the quantity by one for the current item (SALE)
     public void decrementQuantityByOne(long id, int quantity){
         SQLiteDatabase db = getWritableDatabase();
         if (quantity > 0){

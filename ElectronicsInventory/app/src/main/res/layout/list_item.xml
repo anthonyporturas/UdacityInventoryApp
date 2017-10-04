@@ -10,14 +10,17 @@
         android:id="@+id/item_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_weight="2"/>
+        android:layout_weight="2"
+        android:paddingRight="@dimen/activity_margin"/>
 
     <LinearLayout
         android:id="@+id/names"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_alignParentLeft="true"
+        android:layout_toEndOf="@id/item_image"
+        android:layout_toRightOf="@id/item_image"
+
         >
 
         <TextView
@@ -35,27 +38,29 @@
             android:fontFamily="sans-serif"
             android:textAppearance="?android:textAppearanceSmall"
             android:textColor="#AEB6BD" />
+
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_toRightOf="@id/names"
+            android:fontFamily="sans-serif"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textColor="#2B3D4D"
+            />
+        <TextView
+            android:id="@+id/quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_toRightOf="@id/price"
+            android:fontFamily="sans-serif"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="#2B3D4D"
+            />
     </LinearLayout>
-    <TextView
-        android:id="@+id/price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/activity_margin"
-        android:layout_toRightOf="@id/names"
-        android:fontFamily="sans-serif"
-        android:textAppearance="?android:textAppearanceLarge"
-        android:textColor="#2B3D4D"
-        />
-    <TextView
-        android:id="@+id/quantity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/activity_margin"
-        android:layout_toRightOf="@id/price"
-        android:fontFamily="sans-serif"
-        android:textAppearance="?android:textAppearanceLarge"
-        android:textColor="#2B3D4D"
-        />
+
 
     <Button
         android:id="@+id/sale"
